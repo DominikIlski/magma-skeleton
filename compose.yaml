@@ -1,0 +1,58 @@
+version: '3.7'
+services:
+  users:
+    build:
+      context: .
+      dockerfile: ./apps/users/Dockerfile
+    command: npm run start:dev users
+    env_file:
+      - ./apps/users/.env
+    volumes:
+      - .:/usr/src/app
+    ports:
+      - '3000:3000'
+    depends_on:
+      - mongodb-primary
+      - mongodb-secondary
+      - mongodb-arbiter
+
+  mongodb-primary:
+    image: mongo:7.0.2
+    networks:
+      - mongodb-network
+    environment:
+      - ./env_files/mongo_primary.env
+    volumes:
+      - 'mongodb_data:/data/mongodb_primary'
+    ports:
+      - '27017:27017'
+
+  mongodb-secondary:
+    image: mongo:7.0.2
+    networks:
+      - mongodb-network
+    depends_on:
+      - mongodb-primary
+    environment:
+      - ./env_files/mongo_secondary.env 
+    volumes:
+      - 'mongodb_data:/data/mongodb_secondary'
+    ports:
+      - '27018:27017'
+  
+  mongodb-arbiter:
+    image: mongo:7.0.2
+    networks:
+      - mongodb-network
+    depends_on:
+      - mongodb-primary
+    environment:
+      - ./env_files/mongo_arbiter.env
+
+networks:
+  mongodb-network:
+    driver: bridge
+
+volumes:
+  mongodb_data:
+    driver: local
