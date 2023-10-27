@@ -1,6 +1,13 @@
 import { Logger, NotFoundException } from '@nestjs/common';
 import { IRepository } from '../../interfaces';
-import { Connection, FilterQuery, Model, SaveOptions, Types } from 'mongoose';
+import {
+  ClientSession,
+  Connection,
+  FilterQuery,
+  Model,
+  SaveOptions,
+  Types,
+} from 'mongoose';
 import { AbstractDocument } from './abstract.schema';
 
 export abstract class AbstractMongoDbRepository<
@@ -14,14 +21,35 @@ export abstract class AbstractMongoDbRepository<
     private readonly connection: Connection,
   ) {}
 
-  async startTransaction() {
+  private async startTransaction() {
     const session = await this.connection.startSession();
     session.startTransaction();
     return session;
   }
 
+  private async commitTransaction(session: ClientSession) {
+    await session.commitTransaction();
+    session.endSession();
+  }
+
+  async runWithTransaction(
+    run: () => Promise<TDocument | null | void>,
+  ): Promise<TDocument | null> {
+    const session = await this.startTransaction();
+    try {
+      const result = await run();
+      await this.commitTransaction(session);
+      if (result) {
+        return result;
+      }
+    } catch (error) {
+      await session.abortTransaction();
+      throw error;
+    }
+  }
+
   async create(
-    document: Omit<TDocument, '_id'>,
+    document: Omit<Omit<TDocument, '_id'>, 'createdAt'>,
     options?: SaveOptions,
   ): Promise<TDocument> {
     const createdDocument = new this.model({
@@ -53,9 +81,12 @@ export abstract class AbstractMongoDbRepository<
     return this.findOne({ _id: id });
   }
 
-  async update(id: string, entity: TDocument): Promise<TDocument> {
+  async update(
+    id: string,
+    newDocument: Omit<Omit<TDocument, '_id'>, 'createdAt'>,
+  ): Promise<TDocument> {
     const document = await this.model
-      .findOneAndUpdate({ _id: id }, entity, { lean: true, new: true })
+      .findOneAndUpdate({ _id: id }, newDocument, { lean: true, new: true })
       .exec();
     if (!document) {
       this.logger.warn('Document not found with querry', id);

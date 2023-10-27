@@ -13,12 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Database Mongodb implementation
 - Config for .env
 - yup for validation
-
-### Fixed
-
-### Changed
-
-### Removed
+- user CRUD
 
 ## [0.0.1] - 26.10.23
 
