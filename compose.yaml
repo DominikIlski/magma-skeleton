@@ -4,55 +4,90 @@ services:
     build:
       context: .
       dockerfile: ./apps/users/Dockerfile
+      target: development
     command: npm run start:dev users
+    networks:
+      - mongo-cluster
     env_file:
-      - ./apps/users/.env
+      - .env
     volumes:
       - .:/usr/src/app
+      - /usr/src/app/node_modules
     ports:
       - '3000:3000'
+    depends_on:
+      - mongodb-init
+
+  mongodb-primary:
+    container_name: ${MONGODB_PRIMARY_NAME}
+    hostname: ${MONGODB_PRIMARY_NAME}
+    image: mongo:7.0.2
+    networks:
+      - mongo-cluster
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_INITDB_ROOT_USERNAME}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
+    volumes:
+      - 'mongodb_data:/data/mongodb_primary'
+      - ${REPLICA_KEY_HOST_PATH}:/${REPLICA_KEY_MOUNT_PATH}
+    expose:
+      - ${MONGODB_PORT}
+    ports:
+      - 30001:${MONGODB_PORT} 
+    restart: always
+    command: mongod --bind_ip_all --replSet ${MONGODB_REPLICA_SET_KEY} --keyFile ${REPLICA_KEY_MOUNT_PATH}
+
+  mongodb-secondary:
+    container_name: ${MONGODB_SECONDARY_NAME}
+    hostname: ${MONGODB_SECONDARY_NAME}
+    image: mongo:7.0.2
+    networks:
+      - mongo-cluster
+    volumes:
+      - 'mongodb_data:/data/mongodb_secondary'
+      - ${REPLICA_KEY_HOST_PATH}:/${REPLICA_KEY_MOUNT_PATH}
+    expose:
+      - ${MONGODB_PORT}
+    ports:
+      - 30002:27017 
+    restart: always  
+    command: mongod --bind_ip_all --replSet ${MONGODB_REPLICA_SET_KEY} --keyFile ${REPLICA_KEY_MOUNT_PATH}
+  
+  mongodb-arbiter:
+    container_name: ${MONGODB_ARBITER_NAME}
+    hostname: ${MONGODB_ARBITER_NAME}
+    image: mongo:7.0.2
+    networks:
+      - mongo-cluster
+    volumes:
+      - ${REPLICA_KEY_HOST_PATH}:/${REPLICA_KEY_MOUNT_PATH}
+    expose:
+      - ${MONGODB_PORT}
+    ports:
+      - 30003:${MONGODB_PORT}
+    restart: always
+    command: mongod --bind_ip_all --replSet ${MONGODB_REPLICA_SET_KEY} --keyFile ${REPLICA_KEY_MOUNT_PATH}
+
+  mongodb-init:
+    image: mongo:7.0.2
+    restart: on-failure
+    volumes:
+      - ./scripts/mongodb_rs_init.sh:/scripts/mongodb_rs_init.sh
+    networks:
+      - mongo-cluster
+    env_file:
+      - .env
     depends_on:
       - mongodb-primary
       - mongodb-secondary
       - mongodb-arbiter
-
-  mongodb-primary:
-    image: mongo:7.0.2
-    networks:
-      - mongodb-network
-    environment:
-      - ./env_files/mongo_primary.env
-    volumes:
-      - 'mongodb_data:/data/mongodb_primary'
-    ports:
-      - '27017:27017'
-
-  mongodb-secondary:
-    image: mongo:7.0.2
-    networks:
-      - mongodb-network
-    depends_on:
-      - mongodb-primary
-    environment:
-      - ./env_files/mongo_secondary.env 
-    volumes:
-      - 'mongodb_data:/data/mongodb_secondary'
-    ports:
-      - '27018:27017'
-  
-  mongodb-arbiter:
-    image: mongo:7.0.2
-    networks:
-      - mongodb-network
-    depends_on:
-      - mongodb-primary
-    environment:
-      - ./env_files/mongo_arbiter.env
+    entrypoint: ["/bin/bash", "/scripts/mongodb_rs_init.sh"]     
 
 networks:
-  mongodb-network:
+  mongo-cluster:
     driver: bridge
 
 volumes:
   mongodb_data:
     driver: local
+

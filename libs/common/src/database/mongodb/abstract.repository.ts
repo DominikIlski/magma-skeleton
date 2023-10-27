@@ -9,6 +9,7 @@ import {
   Types,
 } from 'mongoose';
 import { AbstractDocument } from './abstract.schema';
+import { BaseDto, ExcludePropsByClass } from '@app/common';
 
 export abstract class AbstractMongoDbRepository<
   TDocument extends AbstractDocument,
@@ -33,8 +34,8 @@ export abstract class AbstractMongoDbRepository<
   }
 
   async runWithTransaction(
-    run: () => Promise<TDocument | null | void>,
-  ): Promise<TDocument | null> {
+    run: () => Promise<TDocument | TDocument[]>,
+  ): Promise<TDocument | TDocument[]> {
     const session = await this.startTransaction();
     try {
       const result = await run();
@@ -49,7 +50,7 @@ export abstract class AbstractMongoDbRepository<
   }
 
   async create(
-    document: Omit<Omit<TDocument, '_id'>, 'createdAt'>,
+    document: ExcludePropsByClass<TDocument, AbstractDocument>,
     options?: SaveOptions,
   ): Promise<TDocument> {
     const createdDocument = new this.model({
@@ -81,12 +82,16 @@ export abstract class AbstractMongoDbRepository<
     return this.findOne({ _id: id });
   }
 
-  async update(
+  async update<TUpdateDto extends BaseDto>(
     id: string,
-    newDocument: Omit<Omit<TDocument, '_id'>, 'createdAt'>,
+    newDocument: ExcludePropsByClass<TUpdateDto, AbstractDocument>,
   ): Promise<TDocument> {
     const document = await this.model
-      .findOneAndUpdate({ _id: id }, newDocument, { lean: true, new: true })
+      .findOneAndUpdate({ _id: id }, newDocument, {
+        lean: true,
+        new: true,
+        fields: Object.keys(newDocument),
+      })
       .exec();
     if (!document) {
       this.logger.warn('Document not found with querry', id);

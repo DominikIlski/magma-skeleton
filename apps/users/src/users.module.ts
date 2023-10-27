@@ -5,20 +5,27 @@ import { UsersService } from './users.service';
 import { ConfigModule } from '@nestjs/config';
 import { DatabaseModule } from '@app/common/database/mongodb.module';
 import { UserRepository } from './users.repository';
+import { User, UserSchema } from './schemas/user.schema';
+import { MongooseModule } from '@nestjs/mongoose';
+import { MONGODB_URI } from '@app/common';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
       validationSchema: yup.object({
-        MONGODB_URI: yup.string().required(),
-        PORT: yup.number().required(),
+        MONGO_INITDB_ROOT_USERNAME: yup.string().required(),
+        MONGO_INITDB_ROOT_PASSWORD: yup.string().required(),
+        USERS_SERVICE_PORT: yup.number().required(),
       }),
-      envFilePath: './apps/users/.env',
+      envFilePath: '.env',
+      load: [MONGODB_URI],
     }),
     DatabaseModule,
+    MongooseModule.forFeature([{ name: User.name, schema: UserSchema }]),
   ],
   controllers: [UsersController],
   providers: [UsersService, UserRepository],
+  exports: [UsersService, UserRepository],
 })
 export class UsersModule {}

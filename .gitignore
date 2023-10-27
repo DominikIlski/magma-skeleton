@@ -37,3 +37,4 @@ lerna-debug.log*
 #env vairables
 /env_files
 .env
+*.key
