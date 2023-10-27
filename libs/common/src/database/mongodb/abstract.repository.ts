@@ -9,7 +9,7 @@ import {
   Types,
 } from 'mongoose';
 import { AbstractDocument } from './abstract.schema';
-import { BaseDto, ExcludePropsByClass } from '@app/common';
+import { ExcludePropsByClass } from '@app/common';
 
 export abstract class AbstractMongoDbRepository<
   TDocument extends AbstractDocument,
@@ -82,9 +82,9 @@ export abstract class AbstractMongoDbRepository<
     return this.findOne({ _id: id });
   }
 
-  async update<TUpdateDto extends BaseDto>(
+  async update(
     id: string,
-    newDocument: ExcludePropsByClass<TUpdateDto, AbstractDocument>,
+    newDocument: ExcludePropsByClass<Partial<TDocument>, AbstractDocument>,
   ): Promise<TDocument> {
     const document = await this.model
       .findOneAndUpdate({ _id: id }, newDocument, {

@@ -5,6 +5,11 @@ import { UsersModule } from './users.module';
 async function bootstrap() {
   const app = await NestFactory.create(UsersModule);
   const configService = app.get(ConfigService);
-  await app.listen(configService.get('PORT'));
+  const port = configService.get('USERS_SERVICE_PORT');
+  console.log(`Listening on port ${configService.get('USERS_SERVICE_PORT')}`);
+  if (!port) {
+    throw new Error('USERS_SERVICE_PORT is not defined');
+  }
+  await app.listen(configService.get('USERS_SERVICE_PORT'));
 }
 bootstrap();

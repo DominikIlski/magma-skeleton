@@ -11,6 +11,5 @@ export const MONGODB_URI = () => {
       process.env.MONGODB_PORT +
       '/',
   };
-  console.log(URI_OBJECT);
   return URI_OBJECT;
 };

@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Database interface
 - Database Mongodb implementation
+- Cluster for mongodb
 - Config for .env
 - yup for validation
 - user CRUD
