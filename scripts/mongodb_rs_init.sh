@@ -30,7 +30,6 @@ var config = {
         {
             "_id": 2,
             "host": "${MONGODB_ARBITER_NAME}:${MONGODB_PORT}",
-            "priority": 1,
             "arbiterOnly": true 
         }
     ]
