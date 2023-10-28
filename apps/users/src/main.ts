@@ -1,3 +1,4 @@
+import 'source-map-support/register';
 import { NestFactory } from '@nestjs/core';
 import { ConfigService } from '@nestjs/config';
 import { UsersModule } from './users.module';
@@ -8,10 +9,11 @@ async function bootstrap() {
   app.useGlobalPipes(new ValidationPipe());
   const configService = app.get(ConfigService);
   const port = configService.get('USERS_SERVICE_PORT');
-  console.log(`Listening on port ${port})}`);
+  console.log(`Listening on port ${port}`);
   if (!port) {
     throw new Error('USERS_SERVICE_PORT is not defined');
   }
+
   await app.listen(port);
 }
 bootstrap();

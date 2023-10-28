@@ -18,6 +18,7 @@ export class UserRepository
   }
 
   async findByEmail(email: string): Promise<User | null> {
-    return this.findOne({ email });
+    const query = this.model.where({ email: email });
+    return this.findOne(query);
   }
 }

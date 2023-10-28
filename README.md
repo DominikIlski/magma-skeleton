@@ -75,4 +75,6 @@ Nest is [MIT licensed](LICENSE).
 
 
 # IMPORTANT NOTES
-openssl rand -base64 756 > ./data/replica.key
+`openssl rand -base64 756 > ./data/replica.key`
+
+`import 'source-map-support/register';`

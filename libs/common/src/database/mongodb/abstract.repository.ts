@@ -10,6 +10,7 @@ import {
 } from 'mongoose';
 import { AbstractDocument } from './abstract.schema';
 import { ExcludePropsByClass } from '@app/common';
+import { NoResultError } from '@app/common/custom_errors';
 
 export abstract class AbstractMongoDbRepository<
   TDocument extends AbstractDocument,
@@ -35,6 +36,7 @@ export abstract class AbstractMongoDbRepository<
 
   async runWithTransaction(
     run: () => Promise<TDocument | TDocument[]>,
+    onError?: (error: Error) => void,
   ): Promise<TDocument | TDocument[]> {
     const session = await this.startTransaction();
     try {
@@ -43,8 +45,12 @@ export abstract class AbstractMongoDbRepository<
       if (result) {
         return result;
       }
+      throw new NoResultError();
     } catch (error) {
       await session.abortTransaction();
+      if (onError) {
+        onError(error);
+      }
       throw error;
     }
   }

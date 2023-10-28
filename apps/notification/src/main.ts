@@ -1,3 +1,4 @@
+import 'source-map-support/register';
 import { NestFactory } from '@nestjs/core';
 import { NotificationModule } from './notification.module';
 
