@@ -78,3 +78,12 @@ Nest is [MIT licensed](LICENSE).
 `openssl rand -base64 756 > ./data/replica.key`
 
 `import 'source-map-support/register';`
+
+```
+var admin = db.getSiblingDB('admin');
+admin.auth('root', 'root');
+```
+
+```
+db.users.findOne()
+```
