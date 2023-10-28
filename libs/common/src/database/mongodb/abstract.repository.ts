@@ -72,7 +72,7 @@ export abstract class AbstractMongoDbRepository<
     const result = await this.model
       .findOne(filterQuery, {}, { lean: true })
       .exec();
-    if (!document) {
+    if (!result) {
       this.logger.warn('Document not found with querry', filterQuery);
       throw new NotFoundException('Document not found');
     }
