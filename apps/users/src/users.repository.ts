@@ -1,6 +1,6 @@
 import { AbstractMongoDbRepository, IUserRepository } from '@app/common';
 import { User } from './schemas/user.schema';
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { InjectConnection, InjectModel } from '@nestjs/mongoose';
 import { Connection, Model } from 'mongoose';
 
@@ -18,7 +18,15 @@ export class UserRepository
   }
 
   async findByEmail(email: string): Promise<User | null> {
-    const query = this.model.where({ email: email });
-    return this.findOne(query);
+    try {
+      const query = this.model.where({ email: email });
+      const result = await this.findOne(query);
+      return result;
+    } catch (error) {
+      if (error instanceof NotFoundException) {
+        return null;
+      }
+      throw error;
+    }
   }
 }

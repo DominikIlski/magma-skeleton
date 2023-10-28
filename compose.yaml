@@ -27,6 +27,7 @@ services:
     environment:
       MONGO_INITDB_ROOT_USERNAME: ${MONGO_INITDB_ROOT_USERNAME}
       MONGO_INITDB_ROOT_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
+      MONGO_INITDB_DATABASE: ${MONGO_INITDB_DATABASE}
     volumes:
       - 'mongodb_data:/data/mongodb_primary'
       - ${REPLICA_KEY_HOST_PATH}:/${REPLICA_KEY_MOUNT_PATH}
