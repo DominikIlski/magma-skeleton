@@ -6,6 +6,7 @@ import {
   Param,
   Post,
   Put,
+  HttpCode,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create_user.dto';
@@ -38,6 +39,7 @@ export class UsersController extends BaseController {
   }
 
   @Delete(':id')
+  @HttpCode(204)
   delete(@Param('id') id: string): Promise<boolean> {
     return this.usersService.delete(id);
   }
