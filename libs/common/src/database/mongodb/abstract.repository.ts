@@ -23,7 +23,7 @@ export abstract class AbstractMongoDbRepository<
     private readonly connection: Connection,
   ) {}
 
-  private async startTransaction() {
+  async startTransaction() {
     const session = await this.connection.startSession();
     session.startTransaction();
     return session;
@@ -111,8 +111,11 @@ export abstract class AbstractMongoDbRepository<
     return document as unknown as TDocument;
   }
 
-  async delete(id: string): Promise<boolean> {
-    const result = await this.model.deleteOne({ _id: id }).exec();
+  async delete(id: string, session?: ClientSession): Promise<boolean> {
+    const result = await this.model
+      .deleteOne({ _id: id })
+      .session(session || null)
+      .exec();
     if (!result.deletedCount) {
       this.logger.warn('Document not found with querry', id);
       throw new NotFoundException('Document not found');

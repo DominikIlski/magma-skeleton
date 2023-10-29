@@ -8,6 +8,7 @@ services:
     command: npm run start:dev users
     networks:
       - mongo-cluster
+      - message-broker
     env_file:
       - .env
     volumes:
@@ -28,6 +29,7 @@ services:
     command: npm run start:dev notification
     networks:
       - mongo-cluster
+      - message-broker
     env_file:
       - .env
     volumes:
@@ -42,6 +44,8 @@ services:
     image: rabbitmq
     ports:
       - '5672:5672'
+    networks:
+      - message-broker
   mongodb-primary:
     container_name: ${MONGODB_PRIMARY_NAME}
     hostname: ${MONGODB_PRIMARY_NAME}
@@ -110,6 +114,8 @@ services:
 
 networks:
   mongo-cluster:
+    driver: bridge
+  message-broker:
     driver: bridge
 
 volumes:

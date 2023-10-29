@@ -8,6 +8,8 @@ import { UserRepository } from './users.repository';
 import { User, UserSchema } from './schemas/user.schema';
 import { MongooseModule } from '@nestjs/mongoose';
 import { MONGODB_URI } from '@app/common';
+import { RmqModule } from '@app/common/rabbitMQ';
+import { NOTIFICATION_SERVICE } from '../../../libs/common/constants/services';
 
 @Module({
   imports: [
@@ -28,6 +30,7 @@ import { MONGODB_URI } from '@app/common';
     }),
     DatabaseModule,
     MongooseModule.forFeature([{ name: User.name, schema: UserSchema }]),
+    RmqModule.register({ queueName: NOTIFICATION_SERVICE }),
   ],
   controllers: [UsersController],
   providers: [UsersService, UserRepository],
