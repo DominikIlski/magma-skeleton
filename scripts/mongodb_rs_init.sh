@@ -36,5 +36,4 @@ var config = {
 };
 rs.initiate(config, { force: true });
 rs.status();
-use "${MONGO_INITDB_DATABASE}";
 EOF

@@ -17,7 +17,31 @@ services:
       - '3000:3000'
     depends_on:
       - mongodb-init
+      - rabbitmq
+      - notification
 
+  notification:
+    build:
+      context: .
+      dockerfile: ./apps/notification/Dockerfile
+      target: development
+    command: npm run start:dev notification
+    networks:
+      - mongo-cluster
+    env_file:
+      - .env
+    volumes:
+      - .:/usr/src/app
+      - /usr/src/app/node_modules
+    depends_on:
+      - mongodb-init
+      - rabbitmq
+
+
+  rabbitmq:
+    image: rabbitmq
+    ports:
+      - '5672:5672'
   mongodb-primary:
     container_name: ${MONGODB_PRIMARY_NAME}
     hostname: ${MONGODB_PRIMARY_NAME}
