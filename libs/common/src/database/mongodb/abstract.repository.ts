@@ -1,5 +1,5 @@
 import { Logger, NotFoundException } from '@nestjs/common';
-import { IRepository } from '../../interfaces';
+import { IBaseRepository } from '../../interfaces';
 import {
   ClientSession,
   Connection,
@@ -14,7 +14,7 @@ import { NoResultError } from '@app/common/custom_errors';
 
 export abstract class AbstractMongoDbRepository<
   TDocument extends AbstractDocument,
-> implements IRepository<TDocument>
+> implements IBaseRepository<TDocument>
 {
   protected abstract readonly logger: Logger;
 
@@ -59,13 +59,13 @@ export abstract class AbstractMongoDbRepository<
     document: ExcludePropsByClass<TDocument, AbstractDocument>,
     options?: SaveOptions,
   ): Promise<TDocument> {
+    const newId = new Types.ObjectId();
     const createdDocument = new this.model({
       ...document,
-      _id: new Types.ObjectId(),
+      _id: newId,
     });
-    return (
-      await createdDocument.save(options)
-    ).toJSON() as unknown as TDocument;
+    const newDocument = await createdDocument.save(options);
+    return newDocument.toJSON() as TDocument;
   }
 
   async findOne(filterQuery: FilterQuery<TDocument>): Promise<TDocument> {
@@ -76,11 +76,17 @@ export abstract class AbstractMongoDbRepository<
       this.logger.warn('Document not found with querry', filterQuery);
       throw new NotFoundException('Document not found');
     }
-    return result as unknown as TDocument;
+    return result as TDocument;
   }
+  async findAll(): Promise<TDocument[]>;
+  async findAll(params: FilterQuery<TDocument>): Promise<TDocument[]>;
+  async findAll(params?: FilterQuery<TDocument>): Promise<TDocument[]> {
+    let results;
+    if (params) {
+      results = await this.model.find(params, {}, { lean: true }).exec();
+    }
 
-  async findAll(): Promise<TDocument[]> {
-    const results = await this.model.find({}, {}, { lean: true }).exec();
+    results = await this.model.find({}, {}, { lean: true }).exec();
     return results as unknown as TDocument[];
   }
 
@@ -96,7 +102,6 @@ export abstract class AbstractMongoDbRepository<
       .findOneAndUpdate({ _id: id }, newDocument, {
         lean: true,
         new: true,
-        fields: Object.keys(newDocument),
       })
       .exec();
     if (!document) {

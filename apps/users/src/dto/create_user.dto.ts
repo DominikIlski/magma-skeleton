@@ -1,16 +1,17 @@
+import { IBaseCreateDto } from '@app/common/interfaces';
 import { IsString, IsEmail, IsNotEmpty, MinLength } from 'class-validator';
 
-export class CreateUserDto {
+export class CreateUserDto implements IBaseCreateDto {
   @IsNotEmpty()
   @IsString()
-  name: string;
+  readonly name: string;
 
   @IsNotEmpty()
   @IsEmail()
-  email: string;
+  readonly email: string;
 
   @IsNotEmpty()
   @IsString()
   @MinLength(6)
-  password: string;
+  readonly password: string;
 }

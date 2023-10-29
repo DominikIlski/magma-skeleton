@@ -4,6 +4,6 @@ export const validateEmail = (email: string) => {
 };
 
 export const validateName = (name: string) => {
-  const re = /^[a-zA-Z ]{2,30}$/;
+  const re = /^[a-zA-Z ]{2,50}$/;
   return re.test(name);
 };

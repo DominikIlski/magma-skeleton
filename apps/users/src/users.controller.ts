@@ -7,29 +7,32 @@ import {
   Post,
   Put,
   HttpCode,
+  Query,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create_user.dto';
 import { UpdateUserDto } from './dto/update_user.dto';
-import { BaseController } from '@app/common';
+import { AbstractBaseController } from '@app/common';
+import { PageOptionsDto } from '@app/common/pagination';
+import { ReturnUserDto } from './dto/return_user.dto';
 
 @Controller('users')
-export class UsersController extends BaseController {
+export class UsersController extends AbstractBaseController {
   constructor(private readonly usersService: UsersService) {
     super();
   }
   @Get()
-  findAll() {
-    return this.usersService.findAll();
+  findAll(@Query() pageOptionsDto: PageOptionsDto) {
+    return this.usersService.findAll(pageOptionsDto);
   }
 
   @Get(':id')
-  findById(@Param('id') id: string) {
+  findById(@Param('id') id: string): Promise<ReturnUserDto> {
     return this.usersService.findById(id);
   }
 
   @Post()
-  create(@Body() data: CreateUserDto) {
+  create(@Body() data: CreateUserDto): Promise<ReturnUserDto> {
     return this.usersService.create(data);
   }
 
