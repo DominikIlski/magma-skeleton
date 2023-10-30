@@ -20,7 +20,7 @@ async function bootstrap() {
   if (!port) {
     throw new Error('USERS_SERVICE_PORT is not defined');
   }
-
+  app.enableShutdownHooks();
   await app.listen(port);
 }
 bootstrap();

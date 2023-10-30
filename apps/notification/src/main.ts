@@ -8,6 +8,7 @@ async function bootstrap() {
   const app = await NestFactory.create(NotificationModule);
   const rmqService = app.get<RmqService>(RmqService);
   app.connectMicroservice(rmqService.getOptions(NOTIFICATION_SERVICE));
+  app.enableShutdownHooks();
   await app.startAllMicroservices();
 }
 bootstrap();
