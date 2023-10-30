@@ -17,9 +17,10 @@ services:
     ports:
       - '${USERS_SERVICE_PORT}:${USERS_SERVICE_PORT}'
     depends_on:
-      - mongodb-init
-      - rabbitmq
-      - notification
+      rabbitmq:
+        condition: service_healthy
+      mongodb-init:
+        condition: service_completed_successfully
 
   notification:
     build:
@@ -27,8 +28,6 @@ services:
       dockerfile: ./apps/notification/Dockerfile
       target: development
     command: npm run start:dev notification
-    ports:
-      - '${NOTIFICATION_SERVICE_PORT}:${NOTIFICATION_SERVICE_PORT}'
     networks:
       - mongo-cluster
       - message-broker
@@ -37,8 +36,9 @@ services:
     volumes:
       - .:/usr/src/app
       - /usr/src/app/node_modules
+    ports:
+      - '${NOTIFICATION_SERVICE_PORT}:${NOTIFICATION_SERVICE_PORT}'
     depends_on:
-      - mongodb-init
       - rabbitmq
 
 
@@ -48,6 +48,11 @@ services:
       - '5672:5672'
     networks:
       - message-broker
+    healthcheck:
+      test: rabbitmq-diagnostics -q ping
+      interval: 30s
+      timeout: 30s
+      retries: 3
   mongodb-primary:
     container_name: ${MONGODB_PRIMARY_NAME}
     hostname: ${MONGODB_PRIMARY_NAME}
