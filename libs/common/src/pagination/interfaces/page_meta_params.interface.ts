@@ -1,7 +1,6 @@
-import { AbstBaseReturnDto } from '@app/common/abstracts';
-import { PageOptionsDto } from '../dtos/page_options.dto';
+import { PageOptionsDto } from '../dto/page_options.dto';
 
-export interface IPageMetaParams extends AbstBaseReturnDto {
+export interface IPageMetaParams {
   pageOptionsDto: PageOptionsDto;
   itemCount: number;
 }

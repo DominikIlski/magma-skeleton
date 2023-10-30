@@ -1,6 +1,6 @@
 import { IsString } from 'class-validator';
-import { IBaseGetDto as IBaseReturnDto } from '../interfaces/interface.dto';
 import { Transform } from 'class-transformer';
+import { IBaseReturnDto } from '../interfaces';
 export abstract class AbstBaseReturnDto implements IBaseReturnDto {
   @IsString()
   @Transform((params) => {

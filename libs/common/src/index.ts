@@ -4,3 +4,5 @@ export * from './database/mongodb/index';
 export * from './interfaces/index';
 export * from './abstracts/index';
 export * from './utils/index';
+export * from './validators/index';
+export * from './constants/services';

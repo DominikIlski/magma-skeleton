@@ -65,7 +65,7 @@ export class UserRepository
     };
 
     return {
-      data: users.map((user) => plainToInstance(ReturnUserDto, user)),
+      data: plainToInstance(ReturnUserDto, users),
       meta: pageMeta,
     };
   }

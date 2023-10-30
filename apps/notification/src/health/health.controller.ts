@@ -1,3 +1,4 @@
+import { AbstractBaseController } from '@app/common/abstracts';
 import { Controller, Get } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { RmqOptions, Transport } from '@nestjs/microservices';
@@ -9,13 +10,15 @@ import {
 } from '@nestjs/terminus';
 
 @Controller('health')
-export class HealthController {
+export class HealthController extends AbstractBaseController {
   constructor(
     private health: HealthCheckService,
     private microservice: MicroserviceHealthIndicator,
     private memory: MemoryHealthIndicator,
     private configService: ConfigService,
-  ) {}
+  ) {
+    super();
+  }
 
   @Get()
   @HealthCheck()

@@ -43,7 +43,7 @@ export class UsersController extends AbstractBaseController {
 
   @Delete(':id')
   @HttpCode(204)
-  delete(@Param('id') id: string): Promise<boolean> {
-    return this.usersService.delete(id);
+  delete(@Param('id') id: string) {
+    this.usersService.delete(id);
   }
 }

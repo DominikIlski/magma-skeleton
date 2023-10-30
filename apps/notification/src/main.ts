@@ -2,7 +2,7 @@ import 'source-map-support/register';
 import { NestFactory } from '@nestjs/core';
 import { NotificationModule } from './notification.module';
 import { RmqService } from '@app/common/rabbitMQ';
-import { NOTIFICATION_SERVICE } from 'libs/common/constants/services';
+import { NOTIFICATION_SERVICE } from '@app/common/constants/services';
 import { ConfigService } from '@nestjs/config';
 
 async function bootstrap() {

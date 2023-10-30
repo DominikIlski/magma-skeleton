@@ -1,1 +1,1 @@
-export * from './dtos/index';
+export * from './dto/index';

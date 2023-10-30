@@ -9,7 +9,7 @@ import { User, UserSchema } from './schemas/user.schema';
 import { MongooseModule } from '@nestjs/mongoose';
 import { MONGODB_URI } from '@app/common';
 import { RmqModule } from '@app/common/rabbitMQ';
-import { NOTIFICATION_SERVICE } from '../../../libs/common/constants/services';
+import { NOTIFICATION_SERVICE } from '../../../libs/common/src/constants/services';
 import { HealthModule } from './health/health.module';
 
 @Module({

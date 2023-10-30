@@ -6,7 +6,7 @@ import { PageOptionsDto } from '@app/common/pagination';
 import { RetrunAllUsers } from './dto/return_all_users.dto';
 import { ReturnUserDto } from './dto/return_user.dto';
 import { plainToInstance } from 'class-transformer';
-import { NOTIFICATION_SERVICE } from '../../../libs/common/constants/services';
+import { NOTIFICATION_SERVICE } from '../../../libs/common/src/constants/services';
 import { ClientProxy } from '@nestjs/microservices';
 import { lastValueFrom } from 'rxjs';
 import { NotificationMessageDto } from 'apps/notification/src/dto/notification.dto';
@@ -40,7 +40,7 @@ export class UsersService {
     try {
       const userEntity = await this.userRepository.create(userDto, { session });
       const notificationMessage: NotificationMessageDto = {
-        message: 'User created',
+        message: 'User created correctly.',
         email: userEntity.email,
         name: userEntity.name,
       };
@@ -68,7 +68,7 @@ export class UsersService {
     try {
       const result = await this.userRepository.delete(id, session);
       const notificationMessage: NotificationMessageDto = {
-        message: 'User deleted',
+        message: 'User deleted correctly.',
         email: userEntity.email,
         name: userEntity.name,
       };

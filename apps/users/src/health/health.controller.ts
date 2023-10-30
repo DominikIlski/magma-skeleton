@@ -1,3 +1,4 @@
+import { AbstractBaseController } from '@app/common/abstracts';
 import { Controller, Get } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { RmqOptions, Transport } from '@nestjs/microservices';
@@ -11,7 +12,7 @@ import {
 } from '@nestjs/terminus';
 
 @Controller('health')
-export class HealthController {
+export class HealthController extends AbstractBaseController {
   constructor(
     private readonly health: HealthCheckService,
     private readonly http: HttpHealthIndicator,
@@ -19,7 +20,9 @@ export class HealthController {
     private mongoose: MongooseHealthIndicator,
     private microservice: MicroserviceHealthIndicator,
     private memory: MemoryHealthIndicator,
-  ) {}
+  ) {
+    super();
+  }
 
   @Get()
   @HealthCheck()
