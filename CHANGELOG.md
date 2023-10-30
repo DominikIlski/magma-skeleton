@@ -5,6 +5,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.2] - 30.10.23
+
+## Added
+
+- model name in invalid request message
+
+## Fixed
+
+- delete bug with 204 returned even on notFoundExeption
+
 ## [0.1.1] - 30.10.23
 
 ## Changed
@@ -17,7 +27,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Health checks for notification and users services
 
-## Changed:
+## Changed
 
 - Dependence of the service deployment
 
