@@ -5,6 +5,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.0] - 30.10.23
+
+## Added
+
+- Health checks for notification and users services
+
+## Changed:
+
+- Dependence of the service deployment
+
 ## [0.0.4] - 29.10.23
 
 ### Added
@@ -12,6 +22,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - pagination for user
 - properties validation
 - Interfaces restructurisation
+- RMQ message broker
+- notification service
 
 ## [0.0.3] - 28.10.23
 

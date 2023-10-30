@@ -1,91 +1,91 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="200" alt="Nest Logo" /></a>
-</p>
+## Microservices-Based Application with Nest.js and Docker
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+This repository contains a microservices-based application with two services: User Service and Notification Service. The services are built using Nest.js, TypeScript, and Docker for containerization and orchestration.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://coveralls.io/github/nestjs/nest?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#9" alt="Coverage" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+### Project Structure
 
-## Description
+The project is structured as follows:
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+- `apps/user`: Contains the User Service, which handles CRUD operations for user entities and uses MongoDB as the data store.
 
-## Installation
-
-```bash
-$ npm install
-```
-
-## Running the app
-
-```bash
-# development
-$ npm run start
-
-# watch mode
-$ npm run start:dev
-
-# production mode
-$ npm run start:prod
-```
-
-## Test
-
-```bash
-# unit tests
-$ npm run test
-
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
-```
-
-## Support
-
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
-
-## Stay in touch
-
-- Author - [Kamil Myśliwiec](https://kamilmysliwiec.com)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
-
-## License
-
-Nest is [MIT licensed](LICENSE).
+- `apps/notification`: Contains the Notification Service, which consumes messages from a message broker, sends mock notifications when a user is created, and informs about user deletions.
 
 
+- `compose.yml`: Defines the services and their configurations for orchestration using Docker Compose.
+
+- `libs/common`: Shared libraries bettwen the services
+
+### Prerequisites
+
+Before running the application, ensure that you have the following installed:
+
+- Docker: For containerization.
+
+### Getting Started
+
+1. Clone this repository:
+
+   ```bash
+   git clone https://github.com/DominikIlski/magma-skeleton.git
+   cd magma-skeleton
+   ```
+
+2. Set permisions on key file for mongodb cluster 
+   ```bash
+   sudo chmod 400 ./data/replica.key
+   ```
+
+2. Build and run the services using Docker Compose:
+
+   ```bash
+   docker-compose up
+   ```
+
+3. Once the services are up and running, you can access the User Service APIs to perform CRUD operations on user entities.
+
+### User Service
+
+The User Service exposes the following API endpoints:
+
+- `GET /users`: Retrieve a list of users with pagination support.
+- `POST /users`: Create a new user (sends an event to the Notification service).
+- `GET /users/:id`: Retrieve a user by ID.
+- `PUT /users/:id`: Update a user by ID.
+- `DELETE /users/:id`: Delete a user by ID (sends an event to the Notification service).
+- `GET /health`: Checks health of the user service
+
+
+
+### Notification Service
+
+The Notification Service listens for events from a message broker. It sends mock notifications when a user is created and when a user is deleted. The notifications are logged to the console.
+
+- `GET /health`: Checks health of the notification service
+
+### Message Broker
+
+This Project uses RabbitMQ
 
 # IMPORTANT NOTES
-`openssl rand -base64 756 > ./data/replica.key`
-
-`sudo chmod 400 ./data/replica.key`
-
+To create a new replica key run:
+```bash 
+openssl rand -base64 756 > ./data/replica.key
+```
+Remember to add correct permisions to replica key file before the deployment.
+```bash
+sudo chmod 400 ./data/replica.key
+```
+To add correct error tracking in the services while they run on docker container add bellow to the top of the `main.ts` file
 `import 'source-map-support/register';`
 
-```
+While inside a container of db to interact with it run `mongosh`
+ and after that:
+```bash
 var admin = db.getSiblingDB('admin');
 admin.auth('root', 'root');
 ```
-
+end example command (change magmaSkeletonDb with appropiert db name inside mongo (e.g run `show dbs;`))
 ```
-db.users.findOne()
+use magmaSkeletonDb;
+db.users.findOne();
 ```
