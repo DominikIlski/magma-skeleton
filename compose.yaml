@@ -15,7 +15,7 @@ services:
       - .:/usr/src/app
       - /usr/src/app/node_modules
     ports:
-      - '3000:3000'
+      - '${USERS_SERVICE_PORT}:${USERS_SERVICE_PORT}'
     depends_on:
       - mongodb-init
       - rabbitmq
@@ -27,6 +27,8 @@ services:
       dockerfile: ./apps/notification/Dockerfile
       target: development
     command: npm run start:dev notification
+    ports:
+      - '${NOTIFICATION_SERVICE_PORT}:${NOTIFICATION_SERVICE_PORT}'
     networks:
       - mongo-cluster
       - message-broker
@@ -78,7 +80,7 @@ services:
     expose:
       - ${MONGODB_PORT}
     ports:
-      - 30002:27017 
+      - 30002:${MONGODB_PORT} 
     restart: always  
     command: mongod --bind_ip_all --replSet ${MONGODB_REPLICA_SET_KEY} --keyFile ${REPLICA_KEY_MOUNT_PATH}
   

@@ -10,6 +10,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { MONGODB_URI } from '@app/common';
 import { RmqModule } from '@app/common/rabbitMQ';
 import { NOTIFICATION_SERVICE } from '../../../libs/common/constants/services';
+import { HealthModule } from './health/health.module';
 
 @Module({
   imports: [
@@ -24,6 +25,7 @@ import { NOTIFICATION_SERVICE } from '../../../libs/common/constants/services';
         MONGODB_PRIMARY_NAME: yup.string().required(),
         MONGODB_SECONDARY_NAME: yup.string().required(),
         MONGODB_PORT: yup.number().required(),
+        RABBIT_MQ_URI: yup.string().required(),
       }),
       envFilePath: '.env',
       load: [MONGODB_URI],
@@ -31,6 +33,7 @@ import { NOTIFICATION_SERVICE } from '../../../libs/common/constants/services';
     DatabaseModule,
     MongooseModule.forFeature([{ name: User.name, schema: UserSchema }]),
     RmqModule.register({ queueName: NOTIFICATION_SERVICE }),
+    HealthModule,
   ],
   controllers: [UsersController],
   providers: [UsersService, UserRepository],
