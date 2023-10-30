@@ -25,7 +25,6 @@ export class HealthController {
       throw new Error('RABBIT_MQ_URI not found');
     }
     return this.health.check([
-      () => this.memory.checkHeap('memory_heap', 150 * 1024 * 1024),
       async () =>
         this.microservice.pingCheck<RmqOptions>('rmq', {
           transport: Transport.RMQ,

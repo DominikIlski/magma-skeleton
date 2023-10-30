@@ -4,7 +4,6 @@ import { NotificationService } from './notification.service';
 import { RmqModule } from '@app/common/rabbitMQ';
 import { ConfigModule } from '@nestjs/config';
 import * as yup from 'yup';
-import { HealthController } from './health/health.controller';
 import { HealthModule } from './health/health.module';
 
 @Module({
@@ -19,7 +18,7 @@ import { HealthModule } from './health/health.module';
     RmqModule,
     HealthModule,
   ],
-  controllers: [NotificationController, HealthController],
+  controllers: [NotificationController],
   providers: [NotificationService],
 })
 export class NotificationModule {}
