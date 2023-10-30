@@ -3,10 +3,11 @@ import {
   Controller,
   Delete,
   Get,
+  HttpCode,
+  HttpStatus,
   Param,
   Post,
   Put,
-  HttpCode,
   Query,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
@@ -42,8 +43,8 @@ export class UsersController extends AbstractBaseController {
   }
 
   @Delete(':id')
-  @HttpCode(204)
-  delete(@Param('id') id: string) {
-    this.usersService.delete(id);
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async delete(@Param('id') id: string) {
+    await this.usersService.delete(id);
   }
 }

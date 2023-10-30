@@ -16,21 +16,18 @@ export abstract class AbstractMongoDbRepository<
 > implements IBaseRepository<TDocument>
 {
   protected abstract readonly logger: Logger;
-
+  protected readonly modelName: string;
   constructor(
     protected readonly model: Model<TDocument>,
     private readonly connection: Connection,
-  ) {}
+  ) {
+    this.modelName = model.modelName;
+  }
 
   async startTransaction() {
     const session = await this.connection.startSession();
     session.startTransaction();
     return session;
-  }
-
-  private async commitTransaction(session: ClientSession) {
-    await session.commitTransaction();
-    session.endSession();
   }
 
   async create(
@@ -51,8 +48,8 @@ export abstract class AbstractMongoDbRepository<
       .findOne(filterQuery, {}, { lean: true })
       .exec();
     if (!result) {
-      this.logger.warn('Document not found with querry', filterQuery);
-      throw new NotFoundException('Document not found');
+      this.logger.warn(`${this.modelName} not found with querry`, filterQuery);
+      throw new NotFoundException(`${this.modelName} not found`);
     }
     return result as TDocument;
   }
@@ -68,8 +65,13 @@ export abstract class AbstractMongoDbRepository<
     return results as unknown as TDocument[];
   }
 
-  findById(id: string): Promise<TDocument> {
-    return this.findOne({ _id: id });
+  async findById(id: string): Promise<TDocument> {
+    const result = await this.findOne({ _id: id });
+    if (!result) {
+      this.logger.warn(`${this.modelName} not found with id`, id);
+      throw new NotFoundException(`${this.modelName} not found`);
+    }
+    return result as TDocument;
   }
 
   async update(
@@ -83,10 +85,10 @@ export abstract class AbstractMongoDbRepository<
       })
       .exec();
     if (!document) {
-      this.logger.warn('Document not found with querry', id);
-      throw new NotFoundException('Document not found');
+      this.logger.warn(`${this.modelName} not found with id`, id);
+      throw new NotFoundException(`${this.modelName} not found`);
     }
-    return document as unknown as TDocument;
+    return document as TDocument;
   }
 
   async delete(id: string, session?: ClientSession): Promise<boolean> {
@@ -95,8 +97,8 @@ export abstract class AbstractMongoDbRepository<
       .session(session || null)
       .exec();
     if (!result.deletedCount) {
-      this.logger.warn('Document not found with querry', id);
-      throw new NotFoundException('Document not found');
+      this.logger.warn(`${this.modelName} not found with id`, id);
+      throw new NotFoundException(`${this.modelName} not found`);
     }
     return true;
   }

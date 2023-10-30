@@ -63,8 +63,9 @@ export class UsersService {
   }
 
   async delete(id: string): Promise<boolean> {
-    const session = await this.userRepository.startTransaction();
     const userEntity = await this.userRepository.findById(id);
+    const session = await this.userRepository.startTransaction();
+
     try {
       const result = await this.userRepository.delete(id, session);
       const notificationMessage: NotificationMessageDto = {
@@ -73,7 +74,7 @@ export class UsersService {
         name: userEntity.name,
       };
       await this.sendNotification(
-        NotificationMessageType.CREATE_USER,
+        NotificationMessageType.DELETE_USER,
         notificationMessage,
       );
       await session.commitTransaction();
